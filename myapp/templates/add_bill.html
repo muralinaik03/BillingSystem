@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Bill</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        .item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select,
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .item-price {
+            font-size: 14px;
+            color: #777;
+        }
+
+        #total-amount {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Add Bill</h1>
+    <form id="bill-form" method="post">
+        {% csrf_token %} {{ bill_form.as_p }}
+
+        <div id="items-container">
+            <div class="item">
+                <label for="id_product_1">Product:</label>
+                <select name="product_1" id="id_product_1" class="product-select">
+                    <option value="">Select Product</option>
+                    <!-- Populate options dynamically with products -->
+                    {% for product in products %}
+                    <option value="{{ product.pk }}" data-price="{{ product.price }}">
+                        {{ product.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <label for="id_quantity_1">Quantity:</label>
+                <input
+                        type="number"
+                        name="quantity_1"
+                        id="id_quantity_1"
+                        class="quantity-input"
+                        placeholder="Quantity"
+                />
+                <span class="item-price" id="item-price-1">Price: $0.00</span>
+            </div>
+        </div>
+
+        <!-- Total amount -->
+        <p id="total-amount">Total Amount: $0.00</p>
+
+        <button type="button" id="add-item">Add Item</button>
+        <button type="submit">Create Bill</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        let itemCount = 1;
+        let totalAmount = 0;
+
+        // Add item function
+        $("#add-item").click(function () {
+            itemCount++;
+            const itemHtml = `
+                <div class="item">
+                    <label for="id_product_${itemCount}">Product:</label>
+                    <select name="product_${itemCount}" id="id_product_${itemCount}" class="product-select">
+                        <option value="">Select Product</option>
+                        <!-- Populate options dynamically with products -->
+                        {% for product in products %}
+                            <option value="{{ product.pk }}" data-price="{{ product.price }}">{{ product.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_quantity_${itemCount}">Quantity:</label>
+                    <input type="number" name="quantity_${itemCount}" id="id_quantity_${itemCount}" class="quantity-input" placeholder="Quantity" />
+                    <span class="item-price" id="item-price-${itemCount}">Price: $0.00</span>
+                </div>
+            `;
+            $("#items-container").append(itemHtml);
+        });
+
+        // Calculate total price and update item prices
+        function updateTotal() {
+            totalAmount = 0;
+            $(".item").each(function () {
+                const productId = $(this).find(".product-select").val();
+                const quantity = parseInt($(this).find(".quantity-input").val());
+                const price = parseFloat(
+                    $(this).find(".product-select option:selected").data("price")
+                );
+                const itemTotal = quantity * price;
+                totalAmount += itemTotal;
+                $(this)
+                    .find(".item-price")
+                    .text(`Price: $${itemTotal.toFixed(2)}`);
+            });
+            $("#total-amount").text(`Total Amount: $${totalAmount.toFixed(2)}`);
+        }
+
+        // Update total on item change
+        $("#items-container").on(
+            "change",
+            ".product-select, .quantity-input",
+            updateTotal
+        );
+
+        // Trigger initial total calculation
+        updateTotal();
+    });
+
+    // Submit the form after reloading the page
+    $(document).ready(function () {
+        $("#bill-form").submit(function () {
+            location.reload(true); // Reload the page
+            return true; // Submit the form
+        });
+    });
+</script>
+<p align="center">
+<a href="/home">Home</a>
+</p>
+</body>
+</html>

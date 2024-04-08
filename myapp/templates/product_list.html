@@ -1,0 +1,55 @@
+{% extends "base.html" %} 
+{% block title %}Products{% endblock %} 
+{% block content %}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background-color: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    li:hover {
+      background-color: #f0f0f0;
+    }
+    li a {
+      color: #007bff;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+    li a:hover {
+      text-decoration: underline;
+    }
+    .add-product {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+  <h1>Product List</h1>
+  <ul>
+    {% for product in products %}
+      <li>{{ product.name }} - {{ product.price }}
+        <a href="{% url 'update_product' product.id %}">Update</a> | 
+        <a href="{% url 'delete_product' product.id %}">Delete</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <a class="add-product" href="{% url 'add_product' %}">Add Product</a>
+  <p align="center">
+    <a href="/home">Home</a>
+</p>
+{% endblock %}

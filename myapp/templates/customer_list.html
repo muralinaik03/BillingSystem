@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Customers{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        background-color: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    li:hover {
+        background-color: #f0f0f0;
+    }
+
+    li a {
+        color: #dc3545;
+        text-decoration: none;
+        margin-left: 10px;
+    }
+
+    li a:hover {
+        text-decoration: underline;
+    }
+
+    .add-customer {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+<h1>Customer List</h1>
+<ul>
+    {% for customer in customers %}
+    <li>{{ customer.name }} - {{ customer.phone_number }}
+        <a href="{% url 'delete_customer' customer.id %}">Delete</a>
+    </li>
+    {% endfor %}
+</ul>
+<a class="add-customer" href="{% url 'add_customer' %}">Add New Customer</a>
+<p align="center">
+    <a href="/home">Home</a>
+</p>
+{% endblock %}
