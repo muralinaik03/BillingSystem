@@ -56,3 +56,4 @@ urllib3==2.2.1
 virtualenv==20.16.5
 wcwidth==0.2.5
 whitenoise==6.6.0
+gunicorn
